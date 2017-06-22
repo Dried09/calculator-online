@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Calculator Online</title>
+    <link href="Styles.css" rel="stylesheet" />
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="header"><h2>Calculator Online</h2></div>
+        <div id="calculator">
+            <input type="text" id="screen" name="screen" readonly/>
+            <br />
+            <div id="digits">
+                <input type="button" id="seven" class="button" value="7" />
+                <input type="button" id="eight" class="button" value="8" />
+                <input type="button" id="nine" class="button" value="9" />
+                <br />
+                <input type="button" id="four" class="button" value="4" />
+                <input type="button" id="five" class="button" value="5" />
+                <input type="button" id="six" class="button" value="6" />
+                <br />
+                <input type="button" id="one" class="button" value="1" />
+                <input type="button" id="two" class="button" value="2" />
+                <input type="button" id="three" class="button" value="3" />
+                <br />
+                <input type="button" id="zero" class="button" value="0" />
+                <input type="button" id="dot" class="button" value="," />
+            </div>
+            <div id="actions">
+                <input type="button" id="clear" class="button" value="C" />
+                <br />
+                <input type="button" id="add" class="button" value="+" />
+                <input type="button" id="substract" class="button" value="-" />
+                <br />
+                <input type="button" id="multiply" class="button" value="*" />
+                <input type="button" id="divide" class="button" value="/" />
+                <br />
+                <input type="button" id="equal" class="button" value="=" />
+            </div>
+            <div class="clear-float"></div>
+        </div>
+        <div id="footer"><p>Created by Dried, email: <a href="#">driedsf@gmail.com</a></p></div>
+    </div>
+
+    <script>
+        var firstNumber;
+        var secondNumber;
+        var action;
+
+        $(document).ready(function () {
+
+            //Screen value set 0
+            $("#screen").val("0");
+
+            function InputDigit(value) {
+                if ($("#screen").val() != "0"){
+                    $("#screen").val($("#screen").val() + value);
+                    
+                }
+                else {
+                    $("#screen").val(value);
+                }         
+            }
+
+            //Digits
+            $("#zero").click(function () {
+                InputDigit("0");
+            })
+            $("#one").click(function () {
+                InputDigit("1");
+            })
+            $("#two").click(function () {
+                InputDigit("2");
+            })
+            $("#three").click(function () {
+                InputDigit("3");
+            })
+            $("#four").click(function () {
+                InputDigit("4");
+            })
+            $("#five").click(function () {
+                InputDigit("5");
+            })
+            $("#six").click(function () {
+                InputDigit("6");
+            })
+            $("#seven").click(function () {
+                InputDigit("7");
+            })
+            $("#eight").click(function () {
+                InputDigit("8");
+            })
+            $("#nine").click(function () {
+                InputDigit("9");
+            })
+            $("#dot").click(function () {
+                InputDigit(".");
+            })
+
+            //Actions
+            $("#add").click(function () {
+                firstNumber = $("#screen").val();
+                action = "add";
+                $("#screen").val("0");
+            })
+            $("#substract").click(function () {
+                firstNumber = $("#screen").val();
+                action = "substract";
+                $("#screen").val("0");
+            })
+            $("#multiply").click(function () {
+                firstNumber = $("#screen").val();
+                action = "multiply";
+                $("#screen").val("0");
+            })
+            $("#divide").click(function () {
+                firstNumber = $("#screen").val();
+                action = "divide";
+                $("#screen").val("0");
+            })
+            $("#equal").click(function () {
+                secondNumber = $("#screen").val();
+                $("#screen").val("0");
+                $.post("/api/Values/", {
+                    'firstNumber': firstNumber,
+                    'secondNumber': secondNumber,
+                    'action': action
+                }, function (data) {
+                    $("#screen").val(data);
+                });
+            })
+            $("#clear").click(function () {
+                $("#screen").val("0");
+            })
+            /*
+            $.ajax({
+                url: '/api/values/',
+                type: 'Get',
+                success: function (data) {
+                    $('#field').text(data);
+                },
+                error: function () {
+                    alert("some error detected");
+                }
+            });
+            */
+            /*
+            $.get("/api/Values/", function (data) {
+                $("#field").html(data);
+            });
+            */
+            /*
+            $.ajax({
+                url: '/api/values/',
+                type: 'Post',
+                data: { 'line': 'fuck' },
+                success: function (data) {
+                    $('#field').text(data);
+                },
+                error: function () {
+                    alert("some error detected");
+                }
+            });
+            */
+            /*
+            $.post("/api/Values/", { 'line' : 'fuck' }, function (data) {
+                $("#field").html(data);
+            });
+            */
+        })
+    </script>
+</body>
+</html>
