@@ -48,6 +48,7 @@
         var firstNumber;
         var secondNumber;
         var action;
+        var saved = false;
 
         $(document).ready(function () {
 
@@ -55,14 +56,61 @@
             $("#screen").val("0");
 
             function InputDigit(value) {
-                if ($("#screen").val() != "0"){
-                    $("#screen").val($("#screen").val() + value);
-                    
+                if ($("#screen").val() != "0" && saved == false) {
+                    $("#screen").val($("#screen").val() + value);    
                 }
-                else {
+                else if ($("#screen").val() == "0" && saved == false || saved == true) { 
                     $("#screen").val(value);
+                    saved = false;
                 }         
             }
+
+            function GetResult() {
+                $("#screen").val("calculating...");
+                $.post("/api/Values/", {
+                    'firstNumber': firstNumber,
+                    'secondNumber': secondNumber,
+                    'action': action
+                }, function (data) {
+                    $("#screen").val(data);
+                });
+            }
+
+            //Actions
+            $("#add").click(function () {
+                firstNumber = $("#screen").val();
+                action = "add";
+                saved = true;
+            })
+            $("#substract").click(function () {
+                firstNumber = $("#screen").val();
+                action = "substract";
+                $("#screen").val("0");
+            })
+            $("#multiply").click(function () {
+                firstNumber = $("#screen").val();
+                action = "multiply";
+                $("#screen").val("0");
+            })
+            $("#divide").click(function () {
+                firstNumber = $("#screen").val();
+                action = "divide";
+                $("#screen").val("0");
+            })
+            $("#equal").click(function () {
+                secondNumber = $("#screen").val();
+                GetResult();
+                saved = true;
+                firstNumber = "undefined";
+                secondNumber = "undefined";
+                action = "undefined";
+            })
+            $("#clear").click(function () {
+                $("#screen").val("0");
+                firstNumber = "undefined";
+                secondNumber = "undefined";
+                action = "undefined";
+            })
 
             //Digits
             $("#zero").click(function () {
@@ -97,42 +145,6 @@
             })
             $("#dot").click(function () {
                 InputDigit(".");
-            })
-
-            //Actions
-            $("#add").click(function () {
-                firstNumber = $("#screen").val();
-                action = "add";
-                $("#screen").val("0");
-            })
-            $("#substract").click(function () {
-                firstNumber = $("#screen").val();
-                action = "substract";
-                $("#screen").val("0");
-            })
-            $("#multiply").click(function () {
-                firstNumber = $("#screen").val();
-                action = "multiply";
-                $("#screen").val("0");
-            })
-            $("#divide").click(function () {
-                firstNumber = $("#screen").val();
-                action = "divide";
-                $("#screen").val("0");
-            })
-            $("#equal").click(function () {
-                secondNumber = $("#screen").val();
-                $("#screen").val("0");
-                $.post("/api/Values/", {
-                    'firstNumber': firstNumber,
-                    'secondNumber': secondNumber,
-                    'action': action
-                }, function (data) {
-                    $("#screen").val(data);
-                });
-            })
-            $("#clear").click(function () {
-                $("#screen").val("0");
             })
             /*
             $.ajax({
