@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Calculator Online</title>
-    <link href="Styles.css" rel="stylesheet" />
+    <link href="Styles.css?v=1" rel="stylesheet" />
     <script src="Scripts/jquery-3.1.1.min.js"></script>
 </head>
 <body>
@@ -52,67 +52,87 @@
 
         $(document).ready(function () {
 
-            //Screen value set 0
+            //Screen value initialize with 0
             $("#screen").val("0");
 
+            //Checking input from buttons
             function InputDigit(value) {
-                if ($("#screen").val() != "0" && saved == false) {
+                if ($("#screen").val() != "0" && saved == false || saved == false && value == ".") {
                     $("#screen").val($("#screen").val() + value);    
                 }
                 else if ($("#screen").val() == "0" && saved == false || saved == true) { 
                     $("#screen").val(value);
                     saved = false;
-                }         
+                }  
             }
 
+            //Perform result via ajax in synchronous mode
+            //it gives a lag first time when getting result from server
+            //but async way is unjustifiedly harder to handle for this simple task
             function GetResult() {
-                $("#screen").val("calculating...");
-                $.post("/api/Values/", {
-                    'firstNumber': firstNumber,
-                    'secondNumber': secondNumber,
-                    'action': action
-                }, function (data) {
-                    $("#screen").val(data);
+                $.ajax({
+                    url: '/api/values/',
+                    async: false,
+                    type: 'Post',
+                    data: {
+                        'firstNumber': firstNumber,
+                        'secondNumber': secondNumber,
+                        'action': action
+                    },
+                    success: function (data) {
+                        $('#screen').val(data);
+                    },
+                    error: function () {
+                        $("#screen").val("Error while performing operation");
+                    }
                 });
             }
 
-            //Actions
+            //Operation logic
+            function SetOperation(operationType) {
+                if (!action) {
+                    firstNumber = $("#screen").val();
+                    action = operationType;
+                    saved = true;
+                }
+                else if (action) {
+                    secondNumber = $("#screen").val();
+                    GetResult();
+                    firstNumber = $("#screen").val();
+                    action = operationType;
+                    saved = true;
+                }
+            }
+
+            //Actions to buttons assignment
             $("#add").click(function () {
-                firstNumber = $("#screen").val();
-                action = "add";
-                saved = true;
+                SetOperation("add");
             })
             $("#substract").click(function () {
-                firstNumber = $("#screen").val();
-                action = "substract";
-                $("#screen").val("0");
+                SetOperation("substract");
             })
             $("#multiply").click(function () {
-                firstNumber = $("#screen").val();
-                action = "multiply";
-                $("#screen").val("0");
+                SetOperation("multiply");
             })
             $("#divide").click(function () {
-                firstNumber = $("#screen").val();
-                action = "divide";
-                $("#screen").val("0");
+                SetOperation("divide");
             })
             $("#equal").click(function () {
                 secondNumber = $("#screen").val();
                 GetResult();
                 saved = true;
-                firstNumber = "undefined";
-                secondNumber = "undefined";
-                action = "undefined";
+                firstNumber = "";
+                secondNumber = "";
+                action = "";
             })
             $("#clear").click(function () {
                 $("#screen").val("0");
-                firstNumber = "undefined";
-                secondNumber = "undefined";
-                action = "undefined";
+                firstNumber = "";
+                secondNumber = "";
+                action = "";
             })
 
-            //Digits
+            //Digits input assignment
             $("#zero").click(function () {
                 InputDigit("0");
             })
@@ -146,41 +166,6 @@
             $("#dot").click(function () {
                 InputDigit(".");
             })
-            /*
-            $.ajax({
-                url: '/api/values/',
-                type: 'Get',
-                success: function (data) {
-                    $('#field').text(data);
-                },
-                error: function () {
-                    alert("some error detected");
-                }
-            });
-            */
-            /*
-            $.get("/api/Values/", function (data) {
-                $("#field").html(data);
-            });
-            */
-            /*
-            $.ajax({
-                url: '/api/values/',
-                type: 'Post',
-                data: { 'line': 'fuck' },
-                success: function (data) {
-                    $('#field').text(data);
-                },
-                error: function () {
-                    alert("some error detected");
-                }
-            });
-            */
-            /*
-            $.post("/api/Values/", { 'line' : 'fuck' }, function (data) {
-                $("#field").html(data);
-            });
-            */
         })
     </script>
 </body>

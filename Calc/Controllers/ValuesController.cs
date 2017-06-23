@@ -10,14 +10,6 @@ namespace Calc.Controllers
 {
     public class ValuesController : ApiController
     {
-        [HttpGet]
-        public string Get()
-        {
-            string result = "Shit";
-
-            return result;
-        }
-
         [HttpPost]
         public double Post([FromBody] Operation operation)
         {
